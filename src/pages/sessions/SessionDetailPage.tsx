@@ -425,7 +425,7 @@ export default function SessionDetailPage() {
               color: '#6d4c00',
             }}
           >
-            <strong>What to do:</strong> After the session, come back to this page and enter the attendance code that the host will share during the meeting.
+            <strong>What to do:</strong> During the session, the host will share an attendance code. After the session ends, go to <strong>My Schedule</strong> in the top menu, find this session, and enter the code to verify your attendance.
             <br /><br />
             <strong>Why:</strong> Spots are limited and fill up fast. Unverified attendance counts as a no-show, and repeated no-shows may lead to a temporary suspension — so we can keep things fair for everyone waiting for a spot.
           </div>
