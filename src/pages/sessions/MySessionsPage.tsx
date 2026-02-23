@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../api/client';
+import { formatDateShort } from '../../utils/dateFormat';
 import type { Session } from '../../types';
 
 export default function MySessionsPage() {
@@ -50,13 +51,7 @@ export default function MySessionsPage() {
             </div>
             <div className="card-meta">
               <span>
-                {new Date(s.startDateTime).toLocaleDateString(undefined, {
-                  weekday: 'short',
-                  month: 'short',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
+                {formatDateShort(s.startDateTime)}
               </span>
               {' · '}
               <span>{s.durationMinutes} min</span>

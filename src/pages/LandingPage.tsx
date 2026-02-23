@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
+import { formatMonth, formatTime } from '../utils/dateFormat';
 import type { Session } from '../types';
 
 const FAQ_ITEMS = [
@@ -83,13 +84,13 @@ export default function LandingPage() {
                 <div key={s.id} className="landing-session-card">
                   <div className="landing-session-date">
                     <span className="landing-session-month">
-                      {startDate.toLocaleDateString(undefined, { month: 'short' })}
+                      {formatMonth(s.startDateTime)}
                     </span>
                     <span className="landing-session-day">
                       {startDate.getDate()}
                     </span>
                     <span className="landing-session-time">
-                      {startDate.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
+                      {formatTime(s.startDateTime)}
                     </span>
                   </div>
                   <div className="landing-session-info">

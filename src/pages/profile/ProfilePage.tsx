@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { api } from '../../api/client';
+import { formatDate } from '../../utils/dateFormat';
 import type { EnglishLevelType } from '../../types';
 
 const TEST_TYPE_LABELS: Record<string, string> = {
@@ -249,7 +250,7 @@ export default function ProfilePage() {
                   </span>
                   {user.blacklistedUntil && new Date(user.blacklistedUntil) > new Date() && (
                     <span className="badge badge-closed" style={{ marginLeft: 8, fontSize: '0.7rem' }}>
-                      Suspended until {new Date(user.blacklistedUntil).toLocaleDateString()}
+                      Suspended until {formatDate(user.blacklistedUntil)}
                     </span>
                   )}
                 </dd>
@@ -257,7 +258,7 @@ export default function ProfilePage() {
             )}
 
             <dt>Member Since</dt>
-            <dd>{new Date(user.createdAt).toLocaleDateString()}</dd>
+            <dd>{formatDate(user.createdAt)}</dd>
           </dl>
         </div>
       )}

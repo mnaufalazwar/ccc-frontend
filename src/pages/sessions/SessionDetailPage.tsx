@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { useParams } from 'react-router-dom';
 import { api } from '../../api/client';
 import { useAuth } from '../../contexts/AuthContext';
+import { formatDateTimeLong } from '../../utils/dateFormat';
 import type { Session, Registration, Feedback, User as UserType } from '../../types';
 
 export default function SessionDetailPage() {
@@ -280,14 +281,7 @@ export default function SessionDetailPage() {
         <dl className="session-info">
           <dt>Date & Time</dt>
           <dd>
-            {new Date(session.startDateTime).toLocaleString(undefined, {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-            })}
+            {formatDateTimeLong(session.startDateTime)}
           </dd>
           <dt>Duration</dt>
           <dd>{session.durationMinutes} minutes</dd>

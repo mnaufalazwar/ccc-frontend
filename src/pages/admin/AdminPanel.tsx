@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { api } from '../../api/client';
 import { useAuth } from '../../contexts/AuthContext';
+import { formatDateTime, formatDate, getUserTimezone } from '../../utils/dateFormat';
 import type {
   Session,
   Registration,
@@ -109,7 +110,7 @@ function CreateSessionForm({ onCreated }: { onCreated: () => void }) {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="cs-datetime">Start Date & Time</label>
+          <label htmlFor="cs-datetime">Start Date & Time <span className="text-muted" style={{ fontWeight: 400 }}>({getUserTimezone()})</span></label>
           <input
             id="cs-datetime"
             type="datetime-local"
@@ -216,7 +217,7 @@ function ManageSessions() {
               </span>
             </div>
             <div className="card-meta">
-              {new Date(s.startDateTime).toLocaleString()} ·{' '}
+              {formatDateTime(s.startDateTime)} ·{' '}
               {s.currentRegistrations}/{s.maxParticipants} registered
               {s.attendanceCode && (
                 <span style={{ marginLeft: 8 }}>
@@ -418,7 +419,7 @@ function SessionManager({
             )}
             <dl className="session-info mt-1">
               <dt>Date</dt>
-              <dd>{new Date(session.startDateTime).toLocaleString()}</dd>
+              <dd>{formatDateTime(session.startDateTime)}</dd>
               <dt>Duration</dt>
               <dd>{session.durationMinutes} min</dd>
               <dt>Participants</dt>
@@ -686,7 +687,7 @@ function SessionManager({
                   </div>
                   {fb.text && <p className="text-sm" style={{ margin: '0.25rem 0 0' }}>{fb.text}</p>}
                   <p className="text-muted text-sm" style={{ marginTop: '0.25rem', fontSize: '0.75rem' }}>
-                    {new Date(fb.createdAt).toLocaleString()}
+                    {formatDateTime(fb.createdAt)}
                   </p>
                 </div>
               ))}
@@ -1604,7 +1605,7 @@ function NoShowUsers({ isSuperAdmin }: { isSuperAdmin: boolean }) {
                 <span className="text-muted text-sm" style={{ marginLeft: 8 }}>{u.email}</span>
                 {u.blacklistedUntil && (
                   <span className="badge badge-closed" style={{ marginLeft: 8 }}>
-                    Blacklisted until {new Date(u.blacklistedUntil).toLocaleDateString()}
+                    Blacklisted until {formatDate(u.blacklistedUntil)}
                   </span>
                 )}
               </div>
@@ -1673,7 +1674,7 @@ function BlacklistedUsers({ isSuperAdmin: _isSuperAdmin }: { isSuperAdmin: boole
               <strong>{u.fullName}</strong>
               <span className="text-muted text-sm" style={{ marginLeft: 8 }}>{u.email}</span>
               <span className="badge badge-closed" style={{ marginLeft: 8 }}>
-                Blacklisted until {new Date(u.blacklistedUntil!).toLocaleDateString()}
+                Blacklisted until {formatDate(u.blacklistedUntil!)}
               </span>
               <span className="text-muted text-sm" style={{ marginLeft: 8 }}>
                 No-shows: {u.noShowCount}
@@ -1821,7 +1822,7 @@ function UserCard({
           <span className="badge badge-role" style={{ marginLeft: 8 }}>{user.role}</span>
           {isBlacklisted && (
             <span className="badge badge-closed" style={{ marginLeft: 8 }}>
-              Blacklisted until {new Date(user.blacklistedUntil!).toLocaleDateString()}
+              Blacklisted until {formatDate(user.blacklistedUntil!)}
             </span>
           )}
         </div>

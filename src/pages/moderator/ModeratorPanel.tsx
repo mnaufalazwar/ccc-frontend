@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { api } from '../../api/client';
+import { formatDateTime, formatDate } from '../../utils/dateFormat';
 import type {
   Session,
   BreakoutRoom,
@@ -83,7 +84,7 @@ export default function ModeratorPanel() {
               </span>
             </div>
             <div className="card-meta">
-              {new Date(s.startDateTime).toLocaleString()} ·{' '}
+              {formatDateTime(s.startDateTime)} ·{' '}
               {s.durationMinutes} min
             </div>
           </div>
@@ -344,7 +345,7 @@ function EditLevelForm({
                   </span>
                 )}
                 <span className="text-muted" style={{ marginLeft: 8 }}>
-                  {new Date(h.createdAt).toLocaleDateString()}
+                  {formatDate(h.createdAt)}
                 </span>
               </div>
             ))
