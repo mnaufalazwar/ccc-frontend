@@ -259,6 +259,16 @@ function SessionManager({
   const [zoomPassword, setZoomPassword] = useState('');
   const [zoomSaving, setZoomSaving] = useState(false);
 
+  // Email blast
+  const [emailOpen, setEmailOpen] = useState(false);
+  const [emailSubject, setEmailSubject] = useState('');
+  const [emailBody, setEmailBody] = useState('');
+  const [emailDefaults, setEmailDefaults] = useState({ subject: '', body: '' });
+  const [emailRecipientCount, setEmailRecipientCount] = useState(0);
+  const [emailLoading, setEmailLoading] = useState(false);
+  const [emailSending, setEmailSending] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+
   useEffect(() => {
     loadAll();
   }, [sessionId]);
@@ -330,6 +340,49 @@ function SessionManager({
     } finally {
       setZoomSaving(false);
     }
+  };
+
+  const handleComposeEmail = async () => {
+    setEmailOpen(true);
+    setEmailLoading(true);
+    setEmailSent(false);
+    try {
+      const preview = await api.getEmailPreview(sessionId);
+      setEmailSubject(preview.subject);
+      setEmailBody(preview.body);
+      setEmailDefaults({ subject: preview.subject, body: preview.body });
+      setEmailRecipientCount(preview.recipientCount);
+    } catch (err: any) {
+      setError(err.message);
+      setEmailOpen(false);
+    } finally {
+      setEmailLoading(false);
+    }
+  };
+
+  const handleSendEmail = async () => {
+    if (!confirm(`Send this email to ${emailRecipientCount} participant${emailRecipientCount !== 1 ? 's' : ''}?`)) {
+      return;
+    }
+    setEmailSending(true);
+    setError('');
+    try {
+      const result = await api.sendSessionEmail(sessionId, {
+        subject: emailSubject,
+        body: emailBody,
+      });
+      setActionMsg(`Email sent to ${result.sent} participant${result.sent !== 1 ? 's' : ''}!`);
+      setEmailSent(true);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setEmailSending(false);
+    }
+  };
+
+  const handleResetEmail = () => {
+    setEmailSubject(emailDefaults.subject);
+    setEmailBody(emailDefaults.body);
   };
 
   if (loading) return <div className="page-loading">Loading...</div>;
@@ -492,6 +545,88 @@ function SessionManager({
                 </span>
               )}
             </form>
+          </div>
+
+          {/* Email Participants */}
+          <div className="mt-3">
+            <h3 style={{ fontSize: '1.1rem', marginBottom: '0.75rem' }}>Email Participants</h3>
+            {!emailOpen ? (
+              <button
+                className="btn btn-primary btn-sm"
+                onClick={handleComposeEmail}
+                disabled={registrations.length === 0}
+              >
+                Compose Email
+              </button>
+            ) : emailLoading ? (
+              <p className="text-muted">Loading preview...</p>
+            ) : (
+              <div style={{ maxWidth: 600 }}>
+                <p className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '0.75rem' }}>
+                  This email will be sent to <strong>{emailRecipientCount}</strong> registered participant{emailRecipientCount !== 1 ? 's' : ''}.
+                </p>
+                <div className="form-group">
+                  <label className="form-label">Subject</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={emailSubject}
+                    onChange={(e) => setEmailSubject(e.target.value)}
+                    disabled={emailSending || emailSent}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Message</label>
+                  <textarea
+                    className="form-control"
+                    rows={12}
+                    value={emailBody}
+                    onChange={(e) => setEmailBody(e.target.value)}
+                    disabled={emailSending || emailSent}
+                    style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}
+                  />
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.75rem' }}>
+                  {!emailSent ? (
+                    <>
+                      <button
+                        className="btn btn-primary btn-sm"
+                        onClick={handleSendEmail}
+                        disabled={emailSending || !emailSubject.trim() || !emailBody.trim()}
+                      >
+                        {emailSending ? 'Sending...' : `Send to ${emailRecipientCount} Participant${emailRecipientCount !== 1 ? 's' : ''}`}
+                      </button>
+                      <button
+                        className="btn btn-secondary btn-sm"
+                        onClick={handleResetEmail}
+                        disabled={emailSending}
+                      >
+                        Reset to Default
+                      </button>
+                      <button
+                        className="btn btn-secondary btn-sm"
+                        onClick={() => setEmailOpen(false)}
+                        disabled={emailSending}
+                      >
+                        Cancel
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => { setEmailOpen(false); setEmailSent(false); }}
+                    >
+                      Close
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+            {registrations.length === 0 && (
+              <p className="text-muted" style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
+                No participants registered yet.
+              </p>
+            )}
           </div>
 
           {/* Registrations */}

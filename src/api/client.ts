@@ -301,6 +301,17 @@ export const api = {
       method: 'POST',
     }),
 
+  getEmailPreview: (sessionId: string) =>
+    request<{ subject: string; body: string; recipientCount: number }>(
+      `/admin/sessions/${sessionId}/email-preview`
+    ),
+
+  sendSessionEmail: (sessionId: string, data: { subject: string; body: string }) =>
+    request<{ sent: number }>(`/admin/sessions/${sessionId}/send-email`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
   getConfig: () => request<Record<string, string>>('/admin/config'),
 
   updateConfig: (updates: Record<string, string>) =>
